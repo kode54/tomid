@@ -1,1 +1,1 @@
-@cl /O2 /MT /EHsc /Dstrcasecmp=_stricmp /Dstrncasecmp=_strnicmp /Dsnprintf=sprintf_s 2mid.cpp midi_processing\*.cpp
+@cl /O2 /MT /EHsc /D_USING_V110_SDK_71_ /Dstrcasecmp=_stricmp /Dstrncasecmp=_strnicmp /Dsnprintf=sprintf_s 2mid.cpp midi_processing\*.cpp /link /subsystem:console,5.01
