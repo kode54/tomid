@@ -10,12 +10,25 @@ int main(void)
 
 	if (args.argc() < 2)
 	{
-		fputs("Usage:\t2mid <input files and/or wildcards>\n", stderr);
+		fputs("Usage:\t2mid [-1] <input files and/or wildcards>\n\n\t-1 - Promote type 0 files to type 1\n", stderr);
 		return 1;
+	}
+
+	int arg_1 = 0;
+
+	for (int i = 1; i < args.argc(); i++)
+	{
+		if ( !strcmp( args.argv()[i], "-1" ) )
+		{
+			arg_1 = i;
+			break;
+		}
 	}
 
 	for (int i = 1; i < args.argc(); i++)
 	{
+		if ( arg_1 == i ) continue;
+
 		const char * in_name = args.argv()[i];
 		char * out_name = new char[strlen(in_name) + 5];
 
@@ -71,6 +84,8 @@ int main(void)
 				midi_container container;
 
 				midi_processor::process_file( buffer, in_extension, container );
+
+				if ( arg_1 ) container.promote_to_type1();
 
 				std::vector<uint8_t> out_buffer;
 
