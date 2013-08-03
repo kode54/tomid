@@ -73,7 +73,9 @@ namespace nall {
     int argc() const { return _argc; }
     char const* const* argv() const { return _argv; }
 
-    utf8_args() {
+    utf8_args(int unused, char ** unused2) {
+      (void)unused;
+      (void)unused2;
       typedef int (__cdecl *__wgetmainargs_)(int*, wchar_t***, wchar_t***, int, int*);
       __wgetmainargs_ __wgetmainargs;
       HMODULE module;
@@ -103,8 +105,32 @@ namespace nall {
     int _argc;
     char ** _argv;
   };
+
+  static inline FILE* fopen_utf8(char const* path, char const* mode) {
+    return _wfopen( utf16_t( path ), utf16_t( mode ) );
+  }
 }
 
-#endif  //if defined(_WIN32)
+#else  //if defined(_WIN32)
+
+namespace nall {
+  struct utf8_args {
+    int argc() const { return _argc; }
+    char const* const* argv() { return _argv; }
+
+    utf8_args(int p_argc, char const* const* p_argv)
+    : _argc( p_argc ), _argv( p_argv ) { }
+
+  private:
+    int _argc;
+    char const* const* _argv;
+  };
+
+  static inline FILE* fopen_utf8(char const* path, char const* mode) {
+    return fopen( path, mode );
+  }
+}
+
+#endif
 
 #endif

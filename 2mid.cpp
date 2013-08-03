@@ -4,9 +4,9 @@
 
 #include "nall/utf8.hpp"
 
-int main(void)
+int main(int argc, char ** argv)
 {
-	nall::utf8_args args;
+	nall::utf8_args args(argc, argv);
 
 	if (args.argc() < 2)
 	{
@@ -38,8 +38,8 @@ int main(void)
 		strcpy(out_name, in_name);
 		strcat(out_name, ".mid");
 
-		FILE * f_in = _wfopen(nall::utf16_t(in_name), L"rb");
-		FILE * f_out = _wfopen(nall::utf16_t(out_name), L"wb");
+		FILE * f_in = nall::fopen_utf8(in_name, "rb");
+		FILE * f_out = nall::fopen_utf8(out_name, "wb");
 
 		if ( !f_in )
 		{
