@@ -10,24 +10,33 @@ int main(int argc, char ** argv)
 
 	if (args.argc() < 2)
 	{
-		fputs("Usage:\t2mid [-1] <input files and/or wildcards>\n\n\t-1 - Promote type 0 files to type 1\n", stderr);
+		fputs("Usage:\t2mid [-1] [-h x] <input files and/or wildcards>\n\n\t-1 - Promote type 0 files to type 1\n-h x\tActivate hackfix x, where x is:\n\t\t0 Remove channel 16\n\t\t1 Remove channels 11 through 16\n", stderr);
 		return 1;
 	}
 
 	int arg_1 = 0;
+    int arg_h = -1;
+    int arg_h_value;
 
 	for (int i = 1; i < args.argc(); i++)
 	{
 		if ( !strcmp( args.argv()[i], "-1" ) )
 		{
 			arg_1 = i;
-			break;
+			continue;
 		}
+        else if ( ( !strcmp( args.argv()[i], "-h" ) || !strcmp( args.argv()[i], "-H" ) ) && i + 1 < args.argc() )
+        {
+            char * temp;
+            arg_h = i;
+            arg_h_value = strtoul( args.argv()[i+1], &temp, 10 );
+        }
 	}
 
 	for (int i = 1; i < args.argc(); i++)
 	{
 		if ( arg_1 == i ) continue;
+        if ( (unsigned)(i - arg_h) < 2 ) continue;
 
 		const char * in_name = args.argv()[i];
 		char * out_name = new char[strlen(in_name) + 5];
@@ -86,6 +95,8 @@ int main(int argc, char ** argv)
 				midi_processor::process_file( buffer, in_extension, container );
 
 				if ( arg_1 ) container.promote_to_type1();
+                
+                if ( arg_h ) container.apply_hackfix( arg_h_value );
 
 				std::vector<uint8_t> out_buffer;
 
