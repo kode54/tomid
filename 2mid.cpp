@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "midi_processing/midi_processor.h"
 
@@ -11,13 +12,14 @@ int main(int argc, char ** argv)
 
 	if (args.argc() < 2)
 	{
-		fputs("Usage:\t2mid [-1] [-h x] <input files and/or wildcards>\n\n\t-1 - Promote type 0 files to type 1\n-h x\tActivate hackfix x, where x is:\n\t\t0 Remove channel 16\n\t\t1 Remove channels 11 through 16\n", stderr);
+		fputs("Usage:\t2mid [-1] [-h x] <input files and/or wildcards>\n\n\t-1 - Promote type 0 files to type 1\n\t-h x\tActivate hackfix x, where x is:\n\t\t0 Remove channel 16\n\t\t1 Remove channels 11 through 16\n\t-lpx - Split tracks on program change events, which would\n\t       help immensely with importing into Logic Pro X.\n\t       Only works with type 1 files, so implies -1 switch.\n", stderr);
 		return 1;
 	}
 
 	int arg_1 = 0;
-    int arg_h = -1;
-    int arg_h_value;
+	int arg_h = -1;
+	int arg_h_value;
+	int arg_lpx = 0;
 
 	for (int i = 1; i < args.argc(); i++)
 	{
@@ -26,18 +28,25 @@ int main(int argc, char ** argv)
 			arg_1 = i;
 			continue;
 		}
-        else if ( ( !strcmp( args.argv()[i], "-h" ) || !strcmp( args.argv()[i], "-H" ) ) && i + 1 < args.argc() )
-        {
-            char * temp;
-            arg_h = i;
-            arg_h_value = strtoul( args.argv()[i+1], &temp, 10 );
-        }
+		else if ( ( !strcmp( args.argv()[i], "-h" ) || !strcmp( args.argv()[i], "-H" ) ) && i + 1 < args.argc() )
+		{
+			char * temp;
+			arg_h = i;
+			arg_h_value = strtoul( args.argv()[i+1], &temp, 10 );
+		}
+		else if ( !strcmp( args.argv()[i], "-lpx" ) )
+		{
+			arg_1 = i;
+			arg_lpx = i;
+			continue;
+		}
 	}
 
 	for (int i = 1; i < args.argc(); i++)
 	{
 		if ( arg_1 == i ) continue;
-        if ( (unsigned)(i - arg_h) < 2 ) continue;
+		if ( (unsigned)(i - arg_h) < 2 ) continue;
+		if ( arg_lpx == i ) continue;
 
 		const char * in_name = args.argv()[i];
 		char * out_name = new char[strlen(in_name) + 5];
@@ -96,8 +105,10 @@ int main(int argc, char ** argv)
 				midi_processor::process_file( buffer, in_extension, container );
 
 				if ( arg_1 ) container.promote_to_type1();
+ 
+				if ( arg_h ) container.apply_hackfix( arg_h_value );
 
-                if ( arg_h ) container.apply_hackfix( arg_h_value );
+				if ( arg_lpx ) container.split_by_instrument_changes();
 
 				std::vector<uint8_t> out_buffer;
 
