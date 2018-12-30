@@ -15,7 +15,8 @@
 #include "nall/utf8.hpp"
 
 using json = nlohmann::json;
-json js;
+
+#include "8820json.h"
 
 std::string instrument_callback(uint8_t bank_msb, uint8_t bank_lsb, uint8_t instrument)
 {
@@ -61,10 +62,6 @@ int main(int argc, char ** argv)
 		fputs("Usage:\t2mid [-1] [-h x] <input files and/or wildcards>\n\n\t-1 - Promote type 0 files to type 1\n\t-h x\tActivate hackfix x, where x is:\n\t\t0 Remove channel 16\n\t\t1 Remove channels 11 through 16\n\t-lpx - Split tracks on program change events, which would\n\t       help immensely with importing into Logic Pro X.\n\t       Only works with type 1 files, so implies -1 switch.\n", stderr);
 		return 1;
 	}
-
-	std::ifstream injson("8820.json");
-
-	injson >> js;
 
 	int arg_1 = 0;
 	int arg_h = -1;

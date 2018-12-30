@@ -7,4 +7,5 @@
 *.xmi
 *.hmi
 *.hmp
+/8820json.h
 /2mid
