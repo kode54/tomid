@@ -1,3 +1,10 @@
 *.obj
 *.exe
+*.mid
+*.midi
+*.rmi
+*.kar
+*.xmi
+*.hmi
+*.hmp
 /2mid
