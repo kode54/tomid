@@ -1,10 +1,56 @@
-#include <stdio.h>
+#include <cstdio>
+
 #include <string.h>
 #include <stdlib.h>
+
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <fstream>
+
+#include "nlohmann_json/single_include/nlohmann/json.hpp"
 
 #include "midi_processing/midi_processor.h"
 
 #include "nall/utf8.hpp"
+
+using json = nlohmann::json;
+json js;
+
+std::string instrument_callback(uint8_t bank_msb, uint8_t bank_lsb, uint8_t instrument)
+{
+	std::string smsb, slsb, si;
+
+	smsb = std::to_string((int)bank_msb);
+	slsb = std::to_string((int)bank_lsb);
+	si = std::to_string((int)instrument);
+
+	std::string name;
+
+	try
+	{
+		name = js[smsb][si];
+		std::cout << smsb << ":" << si << " " << name << std::endl;
+	}
+	catch (...)
+	{
+		name = "";
+	}
+
+	std::string out;
+
+	out += smsb;
+	out += ":";
+	out += si;
+	
+	if (name.length())
+	{
+		out += " ";
+		out += name;
+	}
+
+	return out;
+}
 
 int main(int argc, char ** argv)
 {
@@ -15,6 +61,10 @@ int main(int argc, char ** argv)
 		fputs("Usage:\t2mid [-1] [-h x] <input files and/or wildcards>\n\n\t-1 - Promote type 0 files to type 1\n\t-h x\tActivate hackfix x, where x is:\n\t\t0 Remove channel 16\n\t\t1 Remove channels 11 through 16\n\t-lpx - Split tracks on program change events, which would\n\t       help immensely with importing into Logic Pro X.\n\t       Only works with type 1 files, so implies -1 switch.\n", stderr);
 		return 1;
 	}
+
+	std::ifstream injson("8820.json");
+
+	injson >> js;
 
 	int arg_1 = 0;
 	int arg_h = -1;
@@ -108,7 +158,7 @@ int main(int argc, char ** argv)
  
 				if ( arg_h ) container.apply_hackfix( arg_h_value );
 
-				if ( arg_lpx ) container.split_by_instrument_changes();
+				if ( arg_lpx ) container.split_by_instrument_changes(instrument_callback);
 
 				std::vector<uint8_t> out_buffer;
 
