@@ -16,7 +16,7 @@
 
 using json = nlohmann::json;
 
-#include "8820json.h"
+#include "8820.h"
 
 std::string instrument_callback(uint8_t bank_msb, uint8_t bank_lsb, uint8_t instrument)
 {
@@ -55,6 +55,8 @@ std::string instrument_callback(uint8_t bank_msb, uint8_t bank_lsb, uint8_t inst
 
 int main(int argc, char ** argv)
 {
+	init_json_object();
+
 	nall::utf8_args args(argc, argv);
 
 	if (args.argc() < 2)
@@ -102,7 +104,7 @@ int main(int argc, char ** argv)
 		if ( in_extension ) ++in_extension;
 
 		strcpy(out_name, in_name);
-		strcat(out_name, ".mid");
+		strcat(out_name, "_transformed.mid");
 
 		FILE * f_in = nall::fopen_utf8(in_name, "rb");
 		FILE * f_out = nall::fopen_utf8(out_name, "wb");
@@ -110,7 +112,7 @@ int main(int argc, char ** argv)
 		if ( !f_in )
 		{
 			if ( f_out ) fclose( f_out );
-			fprintf( stderr, "Unable to open input file: %s\n", in_name );
+			fprintf( stderr, "Unable to open input file: %s\nError is: %s\n", in_name, strerror(errno) );
 			delete [] out_name;
 			return 1;
 		}
@@ -118,7 +120,7 @@ int main(int argc, char ** argv)
 		if ( !f_out )
 		{
 			fclose( f_in );
-			fprintf( stderr, "Unable to open output file: %s\n", out_name );
+			fprintf( stderr, "Unable to open output file: %s\nError is: %s\n", out_name, strerror(errno) );
 			delete [] out_name;
 			return 1;
 		}

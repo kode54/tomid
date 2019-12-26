@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "msvc build",
+            "type": "shell",
+            "command": "cl.exe",
+            "args": [
+                "/O2",
+                "/MT",
+                "/EHsc",
+                "/D_USING_V110_SDK_71_",
+                "/Dstrcasecmp=_stricmp",
+                "/Dstrncasecmp=_strnicmp",
+                "2mid.cpp",
+                "midi_processing\\*.cpp",
+                "/link",
+                "/subsystem:console,5.01",
+                "/DEBUG"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
