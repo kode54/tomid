@@ -98,13 +98,14 @@ int main(int argc, char ** argv)
 		if ( arg_lpx == i ) continue;
 
 		const char * in_name = args.argv()[i];
-		char * out_name = new char[strlen(in_name) + 5];
+		const char * suffix = "_transformed.mid";
+		char * out_name = new char[strlen(in_name) + strlen(suffix) + 1];
 
 		const char * in_extension = strrchr( in_name, '.' );
 		if ( in_extension ) ++in_extension;
 
 		strcpy(out_name, in_name);
-		strcat(out_name, "_transformed.mid");
+		strcat(out_name, suffix);
 
 		FILE * f_in = nall::fopen_utf8(in_name, "rb");
 		FILE * f_out = nall::fopen_utf8(out_name, "wb");
