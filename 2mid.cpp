@@ -8,7 +8,7 @@
 #include <sstream>
 #include <fstream>
 
-#include "nlohmann_json/single_include/nlohmann/json.hpp"
+#include "json.hpp"
 
 #include "midi_processing/midi_processor.h"
 
