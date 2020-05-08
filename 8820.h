@@ -1,3 +1,5 @@
+
+
 static const uint8_t __8820_bson[] = {
   0x7f, 0x74, 0x00, 0x00, 0x03, 0x30, 0x00, 0x29, 0x09, 0x00, 0x00, 0x02,
   0x30, 0x00, 0x08, 0x00, 0x00, 0x00, 0x50, 0x69, 0x61, 0x6e, 0x6f, 0x20,
@@ -2488,11 +2490,41 @@ static const uint8_t __8820_bson[] = {
 };
 static unsigned int __8820_bson_len = 29823;
 
-static json js;
 
-static void init_json_object()
-{
-  std::vector<uint8_t> array;
-  array.assign(__8820_bson, __8820_bson + __8820_bson_len);
-  js = json::from_bson(array);
+#pragma once
+
+#include "json.hpp"
+
+namespace tomid {
+    using nlohmann::json;
+
+    inline json get_untyped(const json & j, const char * property) {
+        if (j.find(property) != j.end()) {
+            return j.at(property).get<json>();
+        }
+        return json();
+    }
+
+    inline json get_untyped(const json & j, std::string property) {
+        return get_untyped(j, property.data());
+    }
+
+    using InstrumentMap = std::map<std::string, std::map<std::string, std::string>>;
+}
+
+namespace tomid {
+    using InstrumentMap = std::map<std::string, std::map<std::string, std::string>>;
+}
+
+namespace nlohmann {
+}
+
+
+static tomid::InstrumentMap js;
+
+static void init_json_object() {
+    std::vector<uint8_t> array;
+    array.assign(__8820_bson, __8820_bson + __8820_bson_len);
+    nlohmann::json jstemp = json::from_bson(array);
+    js = jstemp.get<tomid::InstrumentMap>();
 }

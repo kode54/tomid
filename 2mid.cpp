@@ -1,7 +1,7 @@
 #include <cstdio>
 
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 
 #include <string>
 #include <iostream>
@@ -20,6 +20,7 @@ using json = nlohmann::json;
 
 std::string instrument_callback(uint8_t bank_msb, uint8_t bank_lsb, uint8_t instrument)
 {
+
 	std::string smsb, slsb, si;
 
 	smsb = std::to_string((int)bank_msb);
@@ -66,7 +67,7 @@ int main(int argc, char ** argv)
 	}
 
 	int arg_1 = 0;
-	int arg_h = -1;
+	int arg_h = 0;
 	int arg_h_value;
 	int arg_lpx = 0;
 
@@ -94,7 +95,7 @@ int main(int argc, char ** argv)
 	for (int i = 1; i < args.argc(); i++)
 	{
 		if ( arg_1 == i ) continue;
-		if ( (unsigned)(i - arg_h) < 2 ) continue;
+		if ( arg_h && (unsigned)(i - arg_h) < 2 ) continue;
 		if ( arg_lpx == i ) continue;
 
 		const char * in_name = args.argv()[i];
