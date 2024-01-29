@@ -155,7 +155,7 @@ int main(int argc, char ** argv)
 
 				midi_processor::process_file( buffer, in_extension, container );
 
-				if ( arg_1 ) container.promote_to_type1();
+				if ( arg_1 ) container.promote_to_form_1();
  
 				if ( arg_h ) container.apply_hackfix( arg_h_value );
 
